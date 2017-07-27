@@ -21,6 +21,7 @@ public class User {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
     }
 
     public String getNickname() {
@@ -42,5 +43,10 @@ public class User {
     @Override
     public int hashCode() {
         return nickname.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof User && ((User) obj).getNickname().equals(nickname);
     }
 }
