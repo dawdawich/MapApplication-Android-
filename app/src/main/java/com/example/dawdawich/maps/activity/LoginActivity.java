@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.android.volley.Request.Method;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONException;
@@ -59,11 +60,13 @@ public class LoginActivity extends Activity {
         // SQLite database handler
         db = new SQLiteHandler(getApplicationContext());
 
+        String nickname = db.getUserDetails().get("nickname");
+
         // Session manager
         session = new SessionManager(getApplicationContext());
 
         // Check if user is already logged in or not
-        if (session.isLoggedIn()) {
+        if (session.isLoggedIn() && nickname != null && nickname.equals("")) {
             // User is already logged in. Take him to main activity
             Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
             startActivity(intent);
@@ -114,17 +117,25 @@ public class LoginActivity extends Activity {
         pDialog.setMessage("Logging in ...");
         showDialog();
 
-        StringRequest strReq = new StringRequest(Method.POST,
-                AppConfig.URL_LOGIN, new Response.Listener<String>() {
+        JSONObject params = new JSONObject();
+        try {
+            String newPass = MD5Hashing.md5(password);
+            params.put("nickname", email);
+            params.put("password", newPass);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest strReq = new JsonObjectRequest(Method.POST,
+                AppConfig.URL_LOGIN, params, new Response.Listener<JSONObject>() {
 
             @Override
-            public void onResponse(String response) {
+            public void onResponse(JSONObject response) {
                 Log.d(TAG, "Login Response: " + response.toString());
                 hideDialog();
 
                 try {
-                    JSONObject jObj = new JSONObject(response);
-                    boolean error = jObj.getBoolean("error");
+                    boolean error = response.getBoolean("error");
 
                     // Check for error node in json
                     if (!error) {
@@ -132,16 +143,6 @@ public class LoginActivity extends Activity {
                         // Create login session
                         session.setLogin(true);
 
-                        // Now store the user in SQLite
-
-                        JSONObject user = jObj.getJSONObject("user");
-                        String nickname = user.getString("nickname");
-                        String email = user.getString("email");
-                        String created_at = user
-                                .getString("created_at");
-
-                        // Inserting row in users table
-                        db.addUser(nickname, email, created_at);
 
                         // Launch main activity
                         Intent intent = new Intent(LoginActivity.this,
@@ -150,7 +151,7 @@ public class LoginActivity extends Activity {
                         finish();
                     } else {
                         // Error in login. Get the error message
-                        String errorMsg = jObj.getString("error_msg");
+                        String errorMsg = response.getString("error_msg");
                         Toast.makeText(getApplicationContext(),
                                 errorMsg, Toast.LENGTH_LONG).show();
                     }

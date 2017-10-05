@@ -5,11 +5,17 @@ package com.example.dawdawich.maps.app;
 public class AppConfig {
 
     // Server user login url
-    public static String URL_LOGIN = "http://testlaravel.hopto.org:8000/login";
+    //public static String URL_LOGIN = "http://testnap.ddns.net:8080/login";
+    public static String URL_LOGIN = "http://192.168.1.252:8080/login";
 
     // Server user register url
-    public static String URL_REGISTER = "http://testlaravel.hopto.org:8000/register";
+    //public static String URL_REGISTER = "http://testnap.ddns.net:8080/register";
+    public static String URL_REGISTER = "http://192.168.1.252:8080/register";
 
-    public static String URL_GETPOSITIONS = "http://testlaravel.hopto.org:8000/getPositions";
+    //public static String URL_GETPOSITIONS = "http://testnap.ddns.net:8080/getPositions";
+    public static String URL_GETPOSITIONS = "http://192.168.1.252:8080/updatePosition";
+
+    //public static String URL_UPDATEPOSITION = "http://testnap.ddns.net:8080/getPositions";
+    public static String URL_UPDATEPOSITION = "http://192.168.1.252:8080/updatePosition";
 
 }

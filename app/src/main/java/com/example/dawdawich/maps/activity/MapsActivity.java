@@ -69,6 +69,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Handler handler;
 
+    private boolean wait = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,7 +120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                 } catch (JSONException e) {
-
+                    Toast.makeText(getBaseContext(), "Json exception in parse users position.", Toast.LENGTH_LONG).show();
                 }
 
                 if (mMap != null) {
@@ -145,6 +147,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void run() {
 
                 while (true) {
+
+                    wait = false;
+
+                    try {
+                        Thread.sleep(30000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        background.start();
+
+    }
+
+    private void proceedAfterPermission() {
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(getBaseContext(), "Your haven't a location permission.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        final Marker marker = mMap.addMarker(myMarker);
+
+
+        mMap.setMyLocationEnabled(true);
+
+        final Context cnt = this;
+
+        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+
+            @Override
+            public void onMyLocationChange(Location arg0) {
+
+                currentLatitude = arg0.getLatitude();
+                currentLongitude = arg0.getLongitude();
+
+
+
+                marker.setPosition(new LatLng(currentLatitude, currentLongitude));
+
+                if (!wait) {
+
+
                     StringRequest strReq = new StringRequest(Request.Method.GET,
                             AppConfig.URL_GETPOSITIONS, new Response.Listener<String>() {
 
@@ -168,68 +214,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     AppController.getInstance().addToRequestQueue(strReq, "req_pos");
 
-                    try {
-                        Thread.sleep(30000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+
+                    Connection.getInstance(cnt).updateMyPosition(nickname,
+                            currentLatitude, currentLongitude);
+
+                    wait = true;
                 }
-            }
-        });
-
-        background.start();
-
-    }
-
-    private void proceedAfterPermission() {
-        //We've got the permission, now we can proceed further
-        Toast.makeText(getBaseContext(), "We got the Storage Permission", Toast.LENGTH_LONG).show();
-
-
-
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        final Marker marker = mMap.addMarker(myMarker);
-
-
-        mMap.setMyLocationEnabled(true);
-
-        final Context cnt = this;
-
-        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-
-            @Override
-            public void onMyLocationChange(Location arg0) {
-                // TODO Auto-generated method stub
-
-
-
-                /*CircleOptions circle = new CircleOptions();
-                circle.center(me.getPosition());
-                circle.radius(1000);
-                circle.fillColor(Color.BLUE);*/
-
-
-
-                currentLatitude = arg0.getLatitude();
-                currentLongitude = arg0.getLongitude();
-
-
-
-                marker.setPosition(new LatLng(currentLatitude, currentLongitude));
-
-
-
-                Connection.getInstance(cnt).updateMyPosition(nickname,
-                        currentLatitude, currentLongitude);
             }
         });
     }

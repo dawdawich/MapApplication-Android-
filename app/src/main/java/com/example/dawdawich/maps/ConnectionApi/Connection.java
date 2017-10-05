@@ -10,6 +10,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.dawdawich.maps.app.AppConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +27,7 @@ public class Connection {
 
     private static Connection instance;
     private RequestQueue requestQueue;
-    private String ipAddress = "testlaravel.hopto.org:8000";
+    private String ipAddress = "testnap.ddns.net:8080";
     private static Context context;
 
     private Connection() {
@@ -116,21 +117,12 @@ public class Connection {
         URL url = null;
 
         try {
-            Date myDate = new Date();
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
-            calendar.setTime(myDate);
-            Date time = calendar.getTime();
-            SimpleDateFormat outputFmt = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-            String dateAsString = outputFmt.format(time);
 
 
             jObject.put("nickname", nickname);
             jObject.put("latitude", latitude);
             jObject.put("longitude", longitude);
-            jObject.put("last_update", dateAsString);
-            url = new URL("http://" + ipAddress + "/updatePosition");
+            url = new URL(AppConfig.URL_UPDATEPOSITION);
 
 
 

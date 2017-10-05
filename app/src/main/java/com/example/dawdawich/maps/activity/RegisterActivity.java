@@ -10,9 +10,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request.Method;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONException;
@@ -112,29 +114,36 @@ public class RegisterActivity extends Activity {
         pDialog.setMessage("Registering ...");
         showDialog();
 
-        StringRequest strReq = new StringRequest(Method.POST,
-                AppConfig.URL_REGISTER, new Response.Listener<String>() {
+        JSONObject params = new JSONObject();
+        try {
+            String newPass = MD5Hashing.md5(password);
+            params.put("nickname", nickname);
+            params.put("password", newPass);
+            params.put("email", email);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest strReq = new JsonObjectRequest(Method.POST,
+                AppConfig.URL_REGISTER, params, new Response.Listener<JSONObject>() {
 
             @Override
-            public void onResponse(String response) {
+            public void onResponse(final JSONObject response) {
                 Log.d(TAG, "Register Response: " + response.toString());
                 hideDialog();
 
                 try {
-                    JSONObject jObj = new JSONObject(response);
-                    boolean error = jObj.getBoolean("error");
+                    boolean error = response.getBoolean("error");
                     if (!error) {
                         // User successfully stored in MySQL
                         // Now store the user in sqlite
 
-                        JSONObject user = jObj.getJSONObject("user");
+                        JSONObject user = response.getJSONObject("user");
                         String nickname = user.getString("nickname");
                         String email = user.getString("email");
-                        String created_at = user
-                                .getString("created_at");
 
                         // Inserting row in users table
-                        db.addUser(nickname, email, created_at);
+                        db.addUser(nickname, email);
 
                         Toast.makeText(getApplicationContext(), "User successfully registered. Try login now!", Toast.LENGTH_LONG).show();
 
@@ -148,7 +157,7 @@ public class RegisterActivity extends Activity {
 
                         // Error occurred in registration. Get the error
                         // message
-                        String errorMsg = jObj.getString("error_msg");
+                        String errorMsg = response.getString("error_msg");
                         Toast.makeText(getApplicationContext(),
                                 errorMsg, Toast.LENGTH_LONG).show();
                     }
@@ -156,9 +165,8 @@ public class RegisterActivity extends Activity {
                     e.printStackTrace();
 
                     try {
-                        JSONObject jObj = new JSONObject(response);
 
-                        String errorMsg = jObj.getString("error_msg");
+                        String errorMsg = response.getString("error_msg");
                         Toast.makeText(getApplicationContext(),
                                 errorMsg, Toast.LENGTH_LONG).show();
 
@@ -178,20 +186,15 @@ public class RegisterActivity extends Activity {
                         error.getMessage(), Toast.LENGTH_LONG).show();
                 hideDialog();
             }
-        }) {
-
+        }){
             @Override
-            protected Map<String, String> getParams() {
-                // Posting params to register url
-                String newPass = MD5Hashing.md5(password);
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("nickname", nickname);
-                params.put("email", email);
-                params.put("password", newPass);
-
-                return params;
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> map = new HashMap<>();
+                map.put("nickname", email);
+                map.put("password", password);
+                map.put("email", email);
+                return map;
             }
-
         };
 
         // Adding request to request queue
