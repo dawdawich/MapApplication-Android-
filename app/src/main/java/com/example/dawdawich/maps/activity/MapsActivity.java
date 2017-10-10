@@ -39,6 +39,7 @@ import com.example.dawdawich.maps.app.AppController;
 import com.example.dawdawich.maps.app.UserController;
 import com.example.dawdawich.maps.data.User;
 import com.example.dawdawich.maps.fragments.FriendsListFragment;
+import com.example.dawdawich.maps.fragments.FriendsPagerFragment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -79,7 +80,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView;
-    private FriendsListFragment fragment;
+    private FriendsPagerFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -393,7 +394,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragment = fragment == null ? new FriendsListFragment() : fragment;
+            fragment = fragment == null ? new FriendsPagerFragment() : fragment;
             fragmentTransaction.replace(R.id.maps_drawer_layout, fragment, "friends_fragment");
             fragmentTransaction.addToBackStack("friends_fragment").commit();
         }
@@ -411,6 +412,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         else if(fragment != null && fragment.isVisible())
         {
             getSupportFragmentManager().popBackStackImmediate();
+            fragment = null;
             getSupportActionBar().setDisplayShowCustomEnabled(false);
         } else {
             super.onBackPressed();

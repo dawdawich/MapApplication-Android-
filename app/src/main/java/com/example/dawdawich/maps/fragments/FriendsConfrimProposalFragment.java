@@ -9,9 +9,6 @@ import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.method.KeyListener;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +19,7 @@ import android.widget.TextView;
 
 import com.example.dawdawich.maps.R;
 
-public class FriendsListFragment extends ListFragment  {
-
-
-    private String search = "";
-
+public class FriendsConfrimProposalFragment extends ListFragment{
 
     @Nullable
     @Override
@@ -70,46 +63,7 @@ public class FriendsListFragment extends ListFragment  {
             }
         });
 
-        friendsEditText.setKeyListener(new KeyListener() {
-            @Override
-            public int getInputType() {
-                return 0;
-            }
-
-            @Override
-            public boolean onKeyDown(View view, Editable text, int keyCode, KeyEvent event) {
-
-
-
-                return false;
-            }
-
-            @Override
-            public boolean onKeyUp(View view, Editable text, int keyCode, KeyEvent event) {
-                return false;
-            }
-
-            @Override
-            public boolean onKeyOther(View view, Editable text, KeyEvent event) {
-                return false;
-            }
-
-            @Override
-            public void clearMetaKeyState(View view, Editable content, int states) {
-
-            }
-        });
-
         return rootView;
-
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        ActionBar actionBar=((AppCompatActivity)activity).getSupportActionBar();
-        actionBar.setCustomView(R.layout.custom_actionbar_friends);
-        actionBar.setDisplayShowCustomEnabled(true);
 
     }
 
