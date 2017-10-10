@@ -1,43 +1,48 @@
 package com.example.dawdawich.maps.activity;
 
 import android.Manifest;
+import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
+import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.dawdawich.maps.ConnectionApi.Connection;
 import com.example.dawdawich.maps.R;
 import com.example.dawdawich.maps.app.AppConfig;
 import com.example.dawdawich.maps.app.AppController;
 import com.example.dawdawich.maps.app.UserController;
 import com.example.dawdawich.maps.data.User;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.example.dawdawich.maps.fragments.FriendsListFragment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -52,7 +57,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
     private GoogleMap mMap;
     private double currentLatitude, currentLongitude;
@@ -71,6 +76,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private boolean wait = false;
 
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
+    private NavigationView navigationView;
+    private FriendsListFragment fragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +91,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         permissionStatus = getSharedPreferences("permissionStatus", MODE_PRIVATE);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.maps_drawer_layout);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
+        mDrawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        navigationView = (NavigationView) findViewById(R.id.maps_navigation_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
 
         nickname = UserController.getInstance(this).getNickname();
@@ -190,16 +208,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if (!wait) {
 
+                    JSONObject temporary = new JSONObject();
+                    try {
+                        temporary.put("nickname", "dawdawich");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
-                    StringRequest strReq = new StringRequest(Request.Method.GET,
-                            AppConfig.URL_GETPOSITIONS, new Response.Listener<String>() {
+                    JsonObjectRequest strReq = new JsonObjectRequest(Request.Method.POST,
+                            AppConfig.URL_GETPOSITIONS, temporary, new Response.Listener<JSONObject>() {
 
                         @Override
-                        public void onResponse(String response) {
+                        public void onResponse(JSONObject response) {
 
                             Message msgObj = handler.obtainMessage();
                             Bundle b = new Bundle();
-                            b.putString("message", response);
+                            b.putString("message", response.toString());
                             msgObj.setData(b);
                             handler.sendMessage(msgObj);
 
@@ -360,6 +384,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.friend)
+        {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragment = fragment == null ? new FriendsListFragment() : fragment;
+            fragmentTransaction.replace(R.id.maps_drawer_layout, fragment, "friends_fragment");
+            fragmentTransaction.addToBackStack("friends_fragment").commit();
+        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.maps_drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.maps_drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
+        else if(fragment != null && fragment.isVisible())
+        {
+            getSupportFragmentManager().popBackStackImmediate();
+            getSupportActionBar().setDisplayShowCustomEnabled(false);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
 
 

@@ -48,6 +48,10 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        Intent i = new Intent(getApplicationContext(),
+                MapsActivity.class);
+        startActivity(i);
+
         inputEmail = (EditText) findViewById(R.id.email);
         inputPassword = (EditText) findViewById(R.id.password);
         btnLogin = (Button) findViewById(R.id.btnLogin);
@@ -66,12 +70,12 @@ public class LoginActivity extends Activity {
         session = new SessionManager(getApplicationContext());
 
         // Check if user is already logged in or not
-        if (session.isLoggedIn() && nickname != null && nickname.equals("")) {
-            // User is already logged in. Take him to main activity
-            Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-            startActivity(intent);
-            finish();
-        }
+//        if (session.isLoggedIn() && nickname != null && nickname.equals("")) {
+//            // User is already logged in. Take him to main activity
+//            Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+//            startActivity(intent);
+//            finish();
+//        }
 
         // Login button Click Event
         btnLogin.setOnClickListener(new View.OnClickListener() {
