@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -18,27 +19,32 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.dawdawich.maps.R;
+import com.example.dawdawich.maps.app.UserController;
+import com.example.dawdawich.maps.data.User;
 
-public class FriendsListFragment extends ListFragment  {
-
-
-    private String search = "";
+public class FriendsListFragment extends Fragment {
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
-        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_friends_layout, container, false);
+        ViewGroup rootView;
 
-        String[] data = {"dawdawich", "edik", "tema"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.friends_list_row_layout, R.id.txtitem, data);
-
-        setListAdapter(adapter);
-
+        if (UserController.getInstance(getContext()).getUser().getFriends() == null || UserController.getInstance(getContext()).getUser().getFriends().size() == 0)
+        {
+            rootView = (ViewGroup)inflater.inflate(R.layout.empty_list_view, container, false);
+        }
+        else {
+            ArrayAdapter<User> adapter = new ArrayAdapter<User>(getActivity(), R.layout.friends_list_row_layout, R.id.txtitem, (User[]) UserController.getInstance(getContext()).getUser().getFriends().toArray());
+            rootView = (ViewGroup) inflater.inflate(R.layout.fragment_friends_layout, container, false);
+            ListView list = (ListView) rootView.findViewById(R.id.friends_list);
+            list.setAdapter(adapter);
+        }
 
         setRetainInstance(true);
 
@@ -107,10 +113,13 @@ public class FriendsListFragment extends ListFragment  {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ActionBar actionBar=((AppCompatActivity)activity).getSupportActionBar();
+        ActionBar actionBar = ((FragmentActivity)activity);
         actionBar.setCustomView(R.layout.custom_actionbar_friends);
         actionBar.setDisplayShowCustomEnabled(true);
 
     }
+
+
+//    private class FriendsListAdapter extends ArrayAdapter<>
 
 }

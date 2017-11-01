@@ -16,6 +16,7 @@
 
     <string name="open">Open</string>
     <string name="close">Close</string>
+    <string name="key_user_preferences">user_data</string>
 
 
 </resources>

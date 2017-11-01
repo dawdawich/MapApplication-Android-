@@ -15,23 +15,31 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.dawdawich.maps.R;
+import com.example.dawdawich.maps.app.UserController;
+import com.example.dawdawich.maps.data.User;
 
-public class FriendsConfrimProposalFragment extends ListFragment{
+public class FriendsConfrimProposalFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
-        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_friends_layout, container, false);
+        ViewGroup rootView;
 
-        String[] data = {"dawdawich", "edik", "tema"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.friends_list_row_layout, R.id.txtitem, data);
-
-        setListAdapter(adapter);
-
+        if (UserController.getInstance(getContext()).getUser().getProposalFriends() == null || UserController.getInstance(getContext()).getUser().getProposalFriends().size() == 0)
+        {
+            rootView = (ViewGroup)inflater.inflate(R.layout.empty_list_view, container, false);
+        }
+        else {
+            ArrayAdapter<User> adapter = new ArrayAdapter<User>(getActivity(), R.layout.friends_list_row_layout, R.id.txtitem, (User[]) UserController.getInstance(getContext()).getUser().getProposalFriends().toArray());
+            rootView = (ViewGroup) inflater.inflate(R.layout.fragment_friends_layout, container, false);
+            ListView list = (ListView) rootView.findViewById(R.id.friends_list);
+            list.setAdapter(adapter);
+        }
 
         setRetainInstance(true);
 

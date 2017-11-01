@@ -143,7 +143,7 @@ public class RegisterActivity extends Activity {
                         String email = user.getString("email");
 
                         // Inserting row in users table
-                        db.addUser(nickname, email);
+//TODO                        db.addUser(nickname, email);
 
                         Toast.makeText(getApplicationContext(), "User successfully registered. Try login now!", Toast.LENGTH_LONG).show();
 

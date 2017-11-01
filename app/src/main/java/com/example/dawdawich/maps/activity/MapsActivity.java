@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -63,6 +64,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     private double currentLatitude, currentLongitude;
     private String nickname;
+    private int id;
     private MarkerOptions myMarker = new MarkerOptions();
     private IconGenerator iconGenerator;
     private Set<User> users_pos;
@@ -82,6 +84,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private NavigationView navigationView;
     private FriendsPagerFragment fragment;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +93,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        //TODO remove that
+        SharedPreferences sharedPreferences = getSharedPreferences("user_data", MODE_PRIVATE);
+        sharedPreferences.edit().putInt("user_id", 1).commit();
+        sharedPreferences.edit().putString("user_nickname", "dawdawich").commit();
+
 
         permissionStatus = getSharedPreferences("permissionStatus", MODE_PRIVATE);
 
@@ -102,7 +111,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        nickname = UserController.getInstance(this).getNickname();
+//TODO        nickname = UserController.getInstance(this).getNickname();
 
         iconGenerator = new IconGenerator(this);
 
@@ -132,7 +141,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             JSONObject u = (JSONObject) o;
                             if (u.getString("nickname").equals(nickname))
                                 continue;
-                            users_pos.add(new User(u.getString("nickname"), u.getDouble("player_position_latitude"),
+                            users_pos.add(new User(u.getInt("id"),u.getString("nickname"), u.getDouble("player_position_latitude"),
                                     u.getDouble("player_position_longitude"), u.getString("last_update")));
                         }
                     }
@@ -240,7 +249,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     AppController.getInstance().addToRequestQueue(strReq, "req_pos");
 
 
-                    Connection.getInstance(cnt).updateMyPosition(nickname,
+                    Connection.getInstance(cnt).updateMyPosition(id,
                             currentLatitude, currentLongitude);
 
                     wait = true;
@@ -403,7 +412,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.maps_drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -417,7 +426,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             super.onBackPressed();
         }
-    }
+    }*/
 
 
 

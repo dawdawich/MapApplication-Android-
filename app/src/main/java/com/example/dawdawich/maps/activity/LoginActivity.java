@@ -64,7 +64,7 @@ public class LoginActivity extends Activity {
         // SQLite database handler
         db = new SQLiteHandler(getApplicationContext());
 
-        String nickname = db.getUserDetails().get("nickname");
+//  TODO      String nickname = db.getUserDetails().get("nickname");
 
         // Session manager
         session = new SessionManager(getApplicationContext());

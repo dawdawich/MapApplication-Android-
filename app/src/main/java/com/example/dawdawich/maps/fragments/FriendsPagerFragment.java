@@ -11,8 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.dawdawich.maps.R;
+import com.example.dawdawich.maps.app.UserController;
+import com.example.dawdawich.maps.data.User;
 
 public class FriendsPagerFragment extends Fragment{
+
+    User user;
 
     @Nullable
     @Override
@@ -21,7 +25,7 @@ public class FriendsPagerFragment extends Fragment{
 
         ViewGroup viewGroup = (ViewGroup)inflater.inflate(R.layout.friends_tabs_layout, container, false);
 
-
+        user = UserController.getInstance(getContext()).getUser();
 
         return viewGroup;
     }
@@ -31,9 +35,10 @@ public class FriendsPagerFragment extends Fragment{
 
         TabLayout tabLayout = (TabLayout)getActivity().findViewById(R.id.tab_layout);
 
-        tabLayout.addTab(tabLayout.newTab().setText("Friends"));
-        tabLayout.addTab(tabLayout.newTab().setText("Заявки"));
-        tabLayout.addTab(tabLayout.newTab().setText("Отправленые"));
+
+        tabLayout.addTab(tabLayout.newTab().setText("Friends (" + (user.getFriends() != null ? user.getFriends().size() : 0) + ")"));
+        tabLayout.addTab(tabLayout.newTab().setText("Заявки (" + (user.getProposalFriends() != null ? user.getProposalFriends().size() : 0) + ")"));
+        tabLayout.addTab(tabLayout.newTab().setText("Отправленые (" + (user.getWaitingConfirmFriends() != null ? user.getWaitingConfirmFriends().size() : 0) + ")"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 

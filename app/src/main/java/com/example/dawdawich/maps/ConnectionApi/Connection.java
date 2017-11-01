@@ -11,11 +11,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dawdawich.maps.app.AppConfig;
+import com.example.dawdawich.maps.data.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -27,7 +29,6 @@ public class Connection {
 
     private static Connection instance;
     private RequestQueue requestQueue;
-    private String ipAddress = "testnap.ddns.net:8080";
     private static Context context;
 
     private Connection() {
@@ -39,7 +40,7 @@ public class Connection {
         return instance == null ? instance = new Connection() : instance;
     }
 
-    public void sendSearchPost (String nickname, double latitude, double longitude)
+/*    public void sendSearchPost (String nickname, double latitude, double longitude)
     {
         JSONObject jObject = new JSONObject();
         URL url = null;
@@ -74,9 +75,9 @@ public class Connection {
 
         requestQueue.add(stringRequest);
 
-    }
+    }*/
 
-    public void test ()
+/*    public void test ()
     {
         JSONObject jObject = new JSONObject();
         URL url = null;
@@ -109,9 +110,9 @@ public class Connection {
 
         requestQueue.add(stringRequest);
 
-    }
+    }*/
 
-    public void updateMyPosition (String nickname, double latitude, double longitude)
+    public void updateMyPosition (int user_id, double latitude, double longitude)
     {
         JSONObject jObject = new JSONObject();
         URL url = null;
@@ -119,7 +120,7 @@ public class Connection {
         try {
 
 
-            jObject.put("nickname", nickname);
+            jObject.put("user_id", user_id);
             jObject.put("latitude", latitude);
             jObject.put("longitude", longitude);
             url = new URL(AppConfig.URL_UPDATEPOSITION);
@@ -147,6 +148,34 @@ public class Connection {
 
 
         requestQueue.add(stringRequest);
+    }
+
+    public void getInfo (int user_id, User user)
+    {
+        JSONObject jsonObject = new JSONObject();
+        URL url = null;
+
+        try {
+            jsonObject.put("user_id", user_id);
+            url = new URL(AppConfig.URL_GETUSERINFO);
+
+
+
+        } catch (JSONException | MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        final JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST, url.toString(), jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new Response.ErrorListener(){
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("CONNECTION THREAD", "FAIL POST");
+            }
+        });
     }
 
 }

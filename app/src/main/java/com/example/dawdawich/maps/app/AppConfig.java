@@ -18,4 +18,7 @@ public class AppConfig {
     //public static String URL_UPDATEPOSITION = "http://testnap.ddns.net:8080/getPositions";
     public static String URL_UPDATEPOSITION = "http://192.168.1.252:8080/update_position";
 
+//    public static String URL_GETUSERINFO = "http://testnap.ddns.net:8080/get_position";
+    public static String URL_GETUSERINFO = "http://192.168.1.252:8080/get_position";
+
 }
