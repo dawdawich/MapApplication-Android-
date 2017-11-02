@@ -11,7 +11,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dawdawich.maps.app.AppConfig;
+import com.example.dawdawich.maps.app.UserController;
 import com.example.dawdawich.maps.data.User;
+import com.example.dawdawich.maps.fragments.FriendsPagerFragment;
+import com.example.dawdawich.maps.fragments.FriendsSearchFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -147,7 +150,7 @@ public class Connection {
         });
 
 
-        requestQueue.add(stringRequest);
+//        requestQueue.add(stringRequest);
     }
 
     public void getInfo (int user_id, User user)
@@ -176,6 +179,42 @@ public class Connection {
                 Log.d("CONNECTION THREAD", "FAIL POST");
             }
         });
+
+        requestQueue.add(stringRequest);
+    }
+
+    public void searchUsers(String nickname)
+    {
+        JSONObject jsonObject = new JSONObject();
+        URL url = null;
+
+        try {
+            jsonObject.put("nickname", nickname);
+            url = new URL(AppConfig.URL_SEARCHUSERS);
+
+
+
+        } catch (JSONException | MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        final JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST, url.toString(), jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    FriendsSearchFragment.changeList(UserController.getInstance(context).parseUsers(response.getJSONArray("friends")));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener(){
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("CONNECTION THREAD", "FAIL POST");
+            }
+        });
+
+        requestQueue.add(stringRequest);
     }
 
 }

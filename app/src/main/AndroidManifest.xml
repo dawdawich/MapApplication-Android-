@@ -28,7 +28,9 @@
 
         <activity
             android:name=".activity.MapsActivity"
-            android:label="@string/title_activity_maps">
+            android:label="@string/title_activity_maps"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize">
         </activity>
 
         <activity

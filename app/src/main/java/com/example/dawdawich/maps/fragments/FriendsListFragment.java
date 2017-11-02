@@ -2,6 +2,7 @@ package com.example.dawdawich.maps.fragments;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -48,78 +50,11 @@ public class FriendsListFragment extends Fragment {
 
         setRetainInstance(true);
 
-        final ImageView search = (ImageView)getActivity().findViewById(R.id.search_friends_image);
-        final TextView friendsLabel = (TextView) getActivity().findViewById(R.id.friends_label);
-        final EditText friendsEditText = (EditText) getActivity().findViewById(R.id.search_friend_label);
-
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-
-                if (friendsLabel.isEnabled())
-                {
-                    friendsLabel.setEnabled(false);
-                    friendsLabel.setVisibility(View.INVISIBLE);
-                    friendsEditText.setEnabled(true);
-                    friendsEditText.setVisibility(View.VISIBLE);
-                }
-                else
-                {
-                    friendsLabel.setEnabled(true);
-                    friendsLabel.setVisibility(View.VISIBLE);
-                    friendsEditText.setEnabled(false);
-                    friendsEditText.setVisibility(View.INVISIBLE);
-                }
-
-            }
-        });
-
-        friendsEditText.setKeyListener(new KeyListener() {
-            @Override
-            public int getInputType() {
-                return 0;
-            }
-
-            @Override
-            public boolean onKeyDown(View view, Editable text, int keyCode, KeyEvent event) {
-
-
-
-                return false;
-            }
-
-            @Override
-            public boolean onKeyUp(View view, Editable text, int keyCode, KeyEvent event) {
-                return false;
-            }
-
-            @Override
-            public boolean onKeyOther(View view, Editable text, KeyEvent event) {
-                return false;
-            }
-
-            @Override
-            public void clearMetaKeyState(View view, Editable content, int states) {
-
-            }
-        });
-
         return rootView;
 
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        ActionBar actionBar = ((FragmentActivity)activity);
-        actionBar.setCustomView(R.layout.custom_actionbar_friends);
-        actionBar.setDisplayShowCustomEnabled(true);
-
-    }
 
 
-//    private class FriendsListAdapter extends ArrayAdapter<>
 
 }

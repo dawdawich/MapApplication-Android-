@@ -225,6 +225,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         e.printStackTrace();
                     }
 
+                    //TODO update this method
+
                     JsonObjectRequest strReq = new JsonObjectRequest(Request.Method.POST,
                             AppConfig.URL_GETPOSITIONS, temporary, new Response.Listener<JSONObject>() {
 
@@ -246,11 +248,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                     });
 
-                    AppController.getInstance().addToRequestQueue(strReq, "req_pos");
+//                    AppController.getInstance().addToRequestQueue(strReq, "req_pos");
 
 
-                    Connection.getInstance(cnt).updateMyPosition(id,
-                            currentLatitude, currentLongitude);
+//                    Connection.getInstance(cnt).updateMyPosition(id,
+//                            currentLatitude, currentLongitude);
 
                     wait = true;
                 }
@@ -412,7 +414,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
-    /*@Override
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.maps_drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -426,7 +428,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             super.onBackPressed();
         }
-    }*/
+    }
 
 
 

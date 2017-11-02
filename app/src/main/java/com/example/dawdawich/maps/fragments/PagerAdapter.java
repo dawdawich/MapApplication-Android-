@@ -21,9 +21,11 @@ public class PagerAdapter extends FragmentStatePagerAdapter{
             case 0:
                 return new FriendsListFragment();
             case 1:
-                return new FriendsConfrimProposalFragment();
+                return new FriendsConfirmProposalFragment();
             case 2:
                 return new FriendsWaitingConfirmFragment();
+            case 3:
+                return new FriendsSearchFragment();
             default:
                 return null;
         }

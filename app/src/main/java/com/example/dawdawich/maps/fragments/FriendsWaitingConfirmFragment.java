@@ -22,7 +22,7 @@ import com.example.dawdawich.maps.R;
 import com.example.dawdawich.maps.app.UserController;
 import com.example.dawdawich.maps.data.User;
 
-public class FriendsWaitingConfirmFragment extends ListFragment{
+public class FriendsWaitingConfirmFragment extends Fragment{
 
     @Nullable
     @Override
@@ -43,36 +43,10 @@ public class FriendsWaitingConfirmFragment extends ListFragment{
 
         setRetainInstance(true);
 
-        final ImageView search = (ImageView)getActivity().findViewById(R.id.search_friends_image);
-        final TextView friendsLabel = (TextView) getActivity().findViewById(R.id.friends_label);
-        final EditText friendsEditText = (EditText) getActivity().findViewById(R.id.search_friend_label);
-
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-
-                if (friendsLabel.isEnabled())
-                {
-                    friendsLabel.setEnabled(false);
-                    friendsLabel.setVisibility(View.INVISIBLE);
-                    friendsEditText.setEnabled(true);
-                    friendsEditText.setVisibility(View.VISIBLE);
-                }
-                else
-                {
-                    friendsLabel.setEnabled(true);
-                    friendsLabel.setVisibility(View.VISIBLE);
-                    friendsEditText.setEnabled(false);
-                    friendsEditText.setVisibility(View.INVISIBLE);
-                }
-
-            }
-        });
 
         return rootView;
 
     }
+
 
 }

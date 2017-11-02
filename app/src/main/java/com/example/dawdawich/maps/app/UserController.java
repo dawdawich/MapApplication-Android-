@@ -12,8 +12,14 @@ import com.example.dawdawich.maps.R;
 import com.example.dawdawich.maps.data.User;
 import com.example.dawdawich.maps.helper.SQLiteHandler;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.security.Permission;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class UserController  {
 
@@ -40,5 +46,24 @@ public class UserController  {
 
     public User getUser() {
         return user;
+    }
+
+    public Set<User> parseUsers (JSONArray jsonArray)
+    {
+        JSONObject user;
+        Set<User> users = new HashSet<>();
+        for (int i = 0; i < jsonArray.length(); i++)
+        {
+            try {
+                user = jsonArray.getJSONObject(i);
+
+                users.add(new User(user.getInt("id"), user.getString("nickname")));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return users;
     }
 }
