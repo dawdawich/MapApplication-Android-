@@ -26,6 +26,7 @@ public class UserController  {
     private static UserController instance;
     private SQLiteHandler db;
     private User user;
+    private User userPage;
 
 
     private UserController(Context cnt) {
@@ -65,5 +66,13 @@ public class UserController  {
         }
 
         return users;
+    }
+
+    public User getUserPage() {
+        return userPage;
+    }
+
+    public void setUserPage(User userPage) {
+        this.userPage = userPage;
     }
 }

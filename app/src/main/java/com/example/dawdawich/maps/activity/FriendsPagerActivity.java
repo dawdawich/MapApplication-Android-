@@ -1,4 +1,4 @@
-package com.example.dawdawich.maps.fragments;
+package com.example.dawdawich.maps.activity;
 
 
 import android.app.Activity;
@@ -28,13 +28,124 @@ import com.example.dawdawich.maps.ConnectionApi.Connection;
 import com.example.dawdawich.maps.R;
 import com.example.dawdawich.maps.app.UserController;
 import com.example.dawdawich.maps.data.User;
+import com.example.dawdawich.maps.fragments.FriendsSearchFragment;
+import com.example.dawdawich.maps.fragments.PagerAdapter;
 
-public class FriendsPagerFragment extends Fragment{
+public class FriendsPagerActivity extends AppCompatActivity{
 
     private User user;
     private ViewPager viewPager;
 
-    @Nullable
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.friends_tabs_layout);
+
+        user = UserController.getInstance(this).getUser();
+
+        TabLayout tabLayout = (TabLayout)findViewById(R.id.tab_layout);
+
+
+        tabLayout.addTab(tabLayout.newTab().setText("Friends (" + (user.getFriends() != null ? user.getFriends().size() : 0) + ")"));
+        tabLayout.addTab(tabLayout.newTab().setText("Заявки (" + (user.getProposalFriends() != null ? user.getProposalFriends().size() : 0) + ")"));
+        tabLayout.addTab(tabLayout.newTab().setText("Отправленые (" + (user.getWaitingConfirmFriends() != null ? user.getWaitingConfirmFriends().size() : 0) + ")"));
+        tabLayout.addTab(tabLayout.newTab().setText("Поиск"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+
+        viewPager = (ViewPager)findViewById(R.id.pager);
+        final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        viewPager.setAdapter(adapter);
+
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setCustomView(R.layout.custom_actionbar_friends);
+        actionBar.setDisplayShowCustomEnabled(true);
+
+
+
+        final ImageView search = (ImageView)findViewById(R.id.search_friends_image);
+        final TextView friendsLabel = (TextView) findViewById(R.id.friends_label);
+        final EditText friendsEditText = (EditText) findViewById(R.id.search_friend_label);
+
+
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (friendsLabel.isEnabled())
+                {
+                    friendsLabel.setEnabled(false);
+                    friendsLabel.setVisibility(View.INVISIBLE);
+                    friendsEditText.setEnabled(true);
+                    friendsEditText.setVisibility(View.VISIBLE);
+                    viewPager.setCurrentItem(3);
+                }
+                else
+                {
+                    friendsLabel.setEnabled(true);
+                    friendsLabel.setVisibility(View.VISIBLE);
+                    friendsEditText.setEnabled(false);
+                    friendsEditText.setVisibility(View.INVISIBLE);
+                }
+
+            }
+        });
+
+        final Context cnt = this;
+
+        friendsEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (viewPager.getCurrentItem() != 3)
+                {
+                    viewPager.setCurrentItem(3);
+                }
+
+                if (s.toString().equals(""))
+                {
+                    FriendsSearchFragment.clearAdapter();
+                    return;
+                }
+
+                Connection.getInstance(cnt).searchUsers(s.toString());
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+    }
+
+    /*@Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
@@ -151,5 +262,5 @@ public class FriendsPagerFragment extends Fragment{
             }
         });
 
-    }
+    }*/
 }

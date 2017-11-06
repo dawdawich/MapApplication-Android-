@@ -1,8 +1,6 @@
 package com.example.dawdawich.maps.activity;
 
 import android.Manifest;
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,12 +15,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -33,14 +27,9 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.dawdawich.maps.ConnectionApi.Connection;
 import com.example.dawdawich.maps.R;
 import com.example.dawdawich.maps.app.AppConfig;
-import com.example.dawdawich.maps.app.AppController;
-import com.example.dawdawich.maps.app.UserController;
 import com.example.dawdawich.maps.data.User;
-import com.example.dawdawich.maps.fragments.FriendsListFragment;
-import com.example.dawdawich.maps.fragments.FriendsPagerFragment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -82,7 +71,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView;
-    private FriendsPagerFragment fragment;
+    private FriendsPagerActivity fragment;
 
 
     @Override
@@ -403,11 +392,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (id == R.id.friend)
         {
-            FragmentManager fragmentManager = getSupportFragmentManager();
+            /*FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragment = fragment == null ? new FriendsPagerFragment() : fragment;
+            fragment = fragment == null ? new FriendsPagerActivity() : fragment;
             fragmentTransaction.replace(R.id.maps_drawer_layout, fragment, "friends_fragment");
-            fragmentTransaction.addToBackStack("friends_fragment").commit();
+            fragmentTransaction.addToBackStack("friends_fragment").commit();*/
+
+            startActivity(new Intent(this, FriendsPagerActivity.class));
+
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.maps_drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -416,7 +408,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.maps_drawer_layout);
+        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.maps_drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
@@ -427,7 +419,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             getSupportActionBar().setDisplayShowCustomEnabled(false);
         } else {
             super.onBackPressed();
-        }
+        }*/
     }
 
 

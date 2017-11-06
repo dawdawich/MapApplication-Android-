@@ -2,7 +2,6 @@ package com.example.dawdawich.maps.fragments;
 
 
 import android.app.Activity;
-import android.content.ClipData;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,11 +10,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.dawdawich.maps.R;
+import com.example.dawdawich.maps.activity.UserPageActivity;
 import com.example.dawdawich.maps.app.UserController;
 import com.example.dawdawich.maps.data.User;
 
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class FriendsSearchFragment extends Fragment {
+public class FriendsSearchFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     private static ArrayAdapter<User> adapter;
     private static ViewGroup rootView;
@@ -50,11 +51,22 @@ public class FriendsSearchFragment extends Fragment {
         rootView = (ViewGroup) inflater.inflate(R.layout.fragment_friends_layout, container, false);
         ListView list = (ListView) rootView.findViewById(R.id.friends_list);
         list.setAdapter(adapter);
+        list.setOnItemClickListener(this);
 
 
         setRetainInstance(true);
 
         return rootView;
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (adapter.getItem(position) != null && adapter.getItem(position).getId() != 0) {
+            UserController.getInstance(getContext()).setUserPage(adapter.getItem(position));
+
+            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.maps_drawer_layout, new UserPageActivity()).addToBackStack(null).commit();
+        }
 
     }
 
@@ -126,6 +138,12 @@ public class FriendsSearchFragment extends Fragment {
             }
 
             return v;
+        }
+
+        @Nullable
+        @Override
+        public User getItem(int position) {
+            return super.getItem(position);
         }
     }
 

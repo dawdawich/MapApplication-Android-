@@ -106,6 +106,10 @@ public class User {
         return proposalFriends;
     }
 
+    public int getId() {
+        return id;
+    }
+
     @Override
     public int hashCode() {
         return nickname.hashCode();

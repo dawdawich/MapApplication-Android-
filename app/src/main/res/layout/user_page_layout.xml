@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <ImageView
         android:id="@+id/user_avatar"
@@ -34,7 +35,10 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/user_avatar"
-        android:layout_toRightOf="@+id/user_nickname"
-        android:layout_toEndOf="@+id/user_nickname" />
+        android:layout_alignEnd="@+id/user_nickname"
+        android:layout_alignLeft="@+id/user_nickname"
+        android:layout_alignRight="@+id/user_nickname"
+        android:layout_alignStart="@+id/user_nickname"
+        android:layout_below="@+id/user_nickname"
+        android:layout_marginTop="12dp" />
 </RelativeLayout>

@@ -13,7 +13,6 @@ import com.android.volley.toolbox.Volley;
 import com.example.dawdawich.maps.app.AppConfig;
 import com.example.dawdawich.maps.app.UserController;
 import com.example.dawdawich.maps.data.User;
-import com.example.dawdawich.maps.fragments.FriendsPagerFragment;
 import com.example.dawdawich.maps.fragments.FriendsSearchFragment;
 
 import org.json.JSONException;
@@ -22,11 +21,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 public class Connection {
 
