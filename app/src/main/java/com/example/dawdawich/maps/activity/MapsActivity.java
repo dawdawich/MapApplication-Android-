@@ -27,8 +27,10 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.dawdawich.maps.ConnectionApi.Connection;
 import com.example.dawdawich.maps.R;
 import com.example.dawdawich.maps.app.AppConfig;
+import com.example.dawdawich.maps.app.UserController;
 import com.example.dawdawich.maps.data.User;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -56,22 +58,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private int id;
     private MarkerOptions myMarker = new MarkerOptions();
     private IconGenerator iconGenerator;
-    private Set<User> users_pos;
-    private Map<String, Marker> users_marker;
 
     private static final int ACCESS_FINE_LOCATION_CONSTANT = 100;
     private static final int REQUEST_PERMISSION_SETTING = 101;
     private boolean sentToSettings = false;
     private SharedPreferences permissionStatus;
 
-    private Handler handler;
-
-    private boolean wait = false;
-
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView;
-    private FriendsPagerActivity fragment;
+
+    private HashMap<Integer, Marker> markers;
 
 
     @Override
@@ -83,11 +80,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        //TODO remove that
-        SharedPreferences sharedPreferences = getSharedPreferences("user_data", MODE_PRIVATE);
-        sharedPreferences.edit().putInt("user_id", 1).commit();
-        sharedPreferences.edit().putString("user_nickname", "dawdawich").commit();
 
+
+//        //TODO remove that
+//        {
+//            SharedPreferences sharedPreferences = getSharedPreferences("user_data", MODE_PRIVATE);
+//            sharedPreferences.edit().putInt("user_id", 1).commit();
+//            sharedPreferences.edit().putString("user_nickname", "dawda").commit();
+//        }
+
+        nickname = UserController.getInstance(this).getUser().getNickname();
 
         permissionStatus = getSharedPreferences("permissionStatus", MODE_PRIVATE);
 
@@ -100,84 +102,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         navigationView.setNavigationItemSelectedListener(this);
 
 
-//TODO        nickname = UserController.getInstance(this).getNickname();
-
         iconGenerator = new IconGenerator(this);
 
 
         myMarker.position(new LatLng(0, 0));
         myMarker.icon(BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon(nickname)));
-
-        users_pos = new HashSet<>();
-        users_marker = new HashMap<>();
+        markers = new HashMap<>();
 
 
-        handler = new Handler() {
+    }
 
-            public void handleMessage(Message msg) {
-
-                String json = msg.getData().getString("message");
-
-                try {
-                    JSONObject jObj = new JSONObject(json);
-
-                    JSONArray users = jObj.getJSONArray("users");
-
-                    Object o;
-                    for (int i = 0; i < users.length(); i++) {
-                        o = users.get(i);
-                        if (o instanceof JSONObject) {
-                            JSONObject u = (JSONObject) o;
-                            if (u.getString("nickname").equals(nickname))
-                                continue;
-                            users_pos.add(new User(u.getInt("id"),u.getString("nickname"), u.getDouble("player_position_latitude"),
-                                    u.getDouble("player_position_longitude"), u.getString("last_update")));
-                        }
-                    }
-
-
-                } catch (JSONException e) {
-                    Toast.makeText(getBaseContext(), "Json exception in parse users position.", Toast.LENGTH_LONG).show();
-                }
-
-                if (mMap != null) {
-                    for (User user : users_pos) {
-                        if (users_marker.get(user.getNickname()) == null) {
-                            MarkerOptions markerOptions = new MarkerOptions();
-                            markerOptions.position(new LatLng(user.getLatitude(), user.getLongitude()));
-                            markerOptions.icon(BitmapDescriptorFactory.
-                                    fromBitmap(iconGenerator.makeIcon(user.getNickname())));
-
-                            users_marker.put(user.getNickname(), mMap.addMarker(markerOptions));
-                        } else {
-                            users_marker.get(user.getNickname()).
-                                    setPosition(new LatLng(user.getLatitude(), user.getLongitude()));
-                        }
-                    }
-                }
-
-            }
-        };
-
-        Thread background = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                while (true) {
-
-                    wait = false;
-
-                    try {
-                        Thread.sleep(30000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-
-        background.start();
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Connection.getInstance(this).getThisInfo(getSharedPreferences("user_data", MODE_PRIVATE).getInt("user_id", 0));
     }
 
     private void proceedAfterPermission() {
@@ -193,59 +131,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         final Context cnt = this;
 
-        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+        mMap.setOnMyLocationChangeListener(arg0 -> {
 
-            @Override
-            public void onMyLocationChange(Location arg0) {
-
-                currentLatitude = arg0.getLatitude();
-                currentLongitude = arg0.getLongitude();
-
-
-
-                marker.setPosition(new LatLng(currentLatitude, currentLongitude));
-
-                if (!wait) {
-
-                    JSONObject temporary = new JSONObject();
-                    try {
-                        temporary.put("nickname", "dawdawich");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    //TODO update this method
-
-                    JsonObjectRequest strReq = new JsonObjectRequest(Request.Method.POST,
-                            AppConfig.URL_GETPOSITIONS, temporary, new Response.Listener<JSONObject>() {
-
-                        @Override
-                        public void onResponse(JSONObject response) {
-
-                            Message msgObj = handler.obtainMessage();
-                            Bundle b = new Bundle();
-                            b.putString("message", response.toString());
-                            msgObj.setData(b);
-                            handler.sendMessage(msgObj);
-
-                        }
-                    }, new Response.ErrorListener() {
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-
-                        }
-                    });
-
-//                    AppController.getInstance().addToRequestQueue(strReq, "req_pos");
-
-
-//                    Connection.getInstance(cnt).updateMyPosition(id,
-//                            currentLatitude, currentLongitude);
-
-                    wait = true;
+            for (User u : UserController.getInstance(this).getUser().getFriends())
+            {
+                Connection.getInstance(cnt).getUserPosition(u.getId());
+                if (!markers.containsKey(u.getId()))
+                {
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(new LatLng(u.getLatitude(), u.getLongitude()));
+                    markerOptions.icon(BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon(u.getNickname())));
+                    markers.put(u.getId(), mMap.addMarker(markerOptions));
+                }
+                else
+                {
+                    markers.get(u.getId()).setPosition(new LatLng(u.getLatitude(), u.getLongitude()));
                 }
             }
+
+            currentLatitude = arg0.getLatitude();
+            currentLongitude = arg0.getLongitude();
+
+            Connection.getInstance(cnt).updateMyPosition(UserController.getInstance(cnt).getUser().getId(),
+                    arg0.getLatitude(), arg0.getLongitude());
+
+            marker.setPosition(new LatLng(currentLatitude, currentLongitude));
         });
     }
 
@@ -381,8 +291,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             proceedAfterPermission();
 
         }
-
-
     }
 
     @Override
@@ -392,36 +300,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (id == R.id.friend)
         {
-            /*FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragment = fragment == null ? new FriendsPagerActivity() : fragment;
-            fragmentTransaction.replace(R.id.maps_drawer_layout, fragment, "friends_fragment");
-            fragmentTransaction.addToBackStack("friends_fragment").commit();*/
-
             startActivity(new Intent(this, FriendsPagerActivity.class));
-
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.maps_drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-    @Override
-    public void onBackPressed() {
-        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.maps_drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        }
-        else if(fragment != null && fragment.isVisible())
-        {
-            getSupportFragmentManager().popBackStackImmediate();
-            fragment = null;
-            getSupportActionBar().setDisplayShowCustomEnabled(false);
-        } else {
-            super.onBackPressed();
-        }*/
-    }
-
 
 
 }

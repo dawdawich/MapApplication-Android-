@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 public class User {
@@ -32,14 +33,27 @@ public class User {
             e.printStackTrace();
         }
 
+        friends = new HashSet<>();
+        waitingConfirmFriends = new HashSet<>();
+        proposalFriends = new HashSet<>();
+
     }
 
     public User(int id, String nickname) {
         this.id = id;
         this.nickname = nickname;
+        friends = new HashSet<>();
+        waitingConfirmFriends = new HashSet<>();
+        proposalFriends = new HashSet<>();
     }
 
-
+    public User(int id, String nickname, Set<User> friends, Set<User> waitingConfirmFriends, Set<User> proposalFriends) {
+        this.id = id;
+        this.nickname = nickname;
+        this.friends = friends;
+        this.waitingConfirmFriends = waitingConfirmFriends;
+        this.proposalFriends = proposalFriends;
+    }
 
     public String getNickname() {
         return nickname;

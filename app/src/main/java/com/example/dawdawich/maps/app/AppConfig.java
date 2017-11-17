@@ -13,14 +13,18 @@ public class AppConfig {
     public static String URL_REGISTER = "http://192.168.1.252:8080/register";
 
     //public static String URL_GETPOSITIONS = "http://testnap.ddns.net:8080/getPositions";
-    public static String URL_GETPOSITIONS = "http://192.168.1.252:8080/get_position";
+    public static String URL_GETPOSITION = "http://192.168.1.252:8080/get_position";
 
     //public static String URL_UPDATEPOSITION = "http://testnap.ddns.net:8080/getPositions";
     public static String URL_UPDATEPOSITION = "http://192.168.1.252:8080/update_position";
 
 //    public static String URL_GETUSERINFO = "http://testnap.ddns.net:8080/get_position";
-    public static String URL_GETUSERINFO = "http://192.168.1.252:8080/get_position";
+    public static String URL_GETUSERINFO = "http://192.168.1.252:8080/get_user_info";
 
     public static String URL_SEARCHUSERS = "http://192.168.1.252:8080/search_friends";
+
+    public static String URL_SENDINVITE = "http://192.168.1.252:8080/send_invite";
+
+    public static String URL_CONFIRMINVITE = "http://192.168.1.252:8080/confirm_invite";
 
 }

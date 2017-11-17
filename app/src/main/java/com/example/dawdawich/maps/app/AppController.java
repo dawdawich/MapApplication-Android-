@@ -2,6 +2,7 @@ package com.example.dawdawich.maps.app;
 //get information from https://www.androidhive.info/2012/01/android-login-and-registration-with-php-mysql-and-sqlite/
 
 import android.app.Application;
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.android.volley.Request;
@@ -16,10 +17,13 @@ public class AppController extends Application {
 
     private static AppController mInstance;
 
+    private static Context mContext;
+
     @Override
     public void onCreate() {
         super.onCreate();
         mInstance = this;
+        mContext = getApplicationContext();
     }
 
     public static synchronized AppController getInstance() {
@@ -48,6 +52,10 @@ public class AppController extends Application {
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll(tag);
         }
+    }
+
+    public static Context getContext() {
+        return mContext;
     }
 
 }

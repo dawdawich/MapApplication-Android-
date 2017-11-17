@@ -3,6 +3,7 @@ package com.example.dawdawich.maps.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +20,7 @@ import com.example.dawdawich.maps.R;
 import com.example.dawdawich.maps.activity.UserPageActivity;
 import com.example.dawdawich.maps.app.UserController;
 import com.example.dawdawich.maps.data.User;
+import com.example.dawdawich.maps.data.UserAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +33,7 @@ public class FriendsSearchFragment extends Fragment implements AdapterView.OnIte
     private static Activity activity;
     private static LayoutInflater inflater;
     private static ViewGroup container;
-
+    private static ListView list;
 
     @Nullable
     @Override
@@ -49,7 +51,7 @@ public class FriendsSearchFragment extends Fragment implements AdapterView.OnIte
         }
 
         rootView = (ViewGroup) inflater.inflate(R.layout.fragment_friends_layout, container, false);
-        ListView list = (ListView) rootView.findViewById(R.id.friends_list);
+        list = (ListView) rootView.findViewById(R.id.friends_list);
         list.setAdapter(adapter);
         list.setOnItemClickListener(this);
 
@@ -65,14 +67,14 @@ public class FriendsSearchFragment extends Fragment implements AdapterView.OnIte
         if (adapter.getItem(position) != null && adapter.getItem(position).getId() != 0) {
             UserController.getInstance(getContext()).setUserPage(adapter.getItem(position));
 
-            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.maps_drawer_layout, new UserPageActivity()).addToBackStack(null).commit();
+//            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.maps_drawer_layout, new UserPageActivity()).addToBackStack(null).commit();
+            getActivity().startActivity(new Intent(getContext(), UserPageActivity.class));
         }
 
     }
 
     public static void changeList(Set<User> users)
     {
-
         if (users == null || users.size() == 0)
         {
             rootView = (ViewGroup)inflater.inflate(R.layout.empty_list_view, container, false);
@@ -85,65 +87,29 @@ public class FriendsSearchFragment extends Fragment implements AdapterView.OnIte
 
         if (adapter == null) {
             adapter = new UserAdapter(activity, R.layout.friends_list_row_layout, friendsList);
+            list.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }
         else
         {
-//            adapter = new UserAdapter(activity, R.layout.friends_list_row_layout, friendsList);
             adapter.clear();
             adapter.addAll(friendsList);
             adapter.notifyDataSetChanged();
         }
-
-
-
     }
 
     public static void clearAdapter () {
         List<User> emptyList = new ArrayList<>();
         emptyList.add(new User(0, "Список пуст"));
-        adapter.clear();
-        adapter.addAll(emptyList);
-        adapter.notifyDataSetChanged();
-    }
-
-    private static class UserAdapter extends ArrayAdapter<User> {
-
-        private List<User> users;
-
-        public UserAdapter(@NonNull Context context, int resource, @NonNull List<User> users) {
-            super(context, resource, users);
-            this.users = users;
+        if (adapter == null) {
+            adapter = new UserAdapter(activity, R.layout.friends_list_row_layout, emptyList);
+            list.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         }
-
-        @NonNull
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-
-            View v = convertView;
-
-            if (v == null)
-            {
-                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                v = inflater.inflate(R.layout.friends_list_row_layout, null);
-            }
-
-            User u = users.get(position);
-
-            if (u != null)
-            {
-                TextView nickname = (TextView) v.findViewById(R.id.txtitem);
-
-                nickname.setText(u.getNickname());
-            }
-
-            return v;
-        }
-
-        @Nullable
-        @Override
-        public User getItem(int position) {
-            return super.getItem(position);
+        else {
+            adapter.clear();
+            adapter.addAll(emptyList);
+            adapter.notifyDataSetChanged();
         }
     }
 

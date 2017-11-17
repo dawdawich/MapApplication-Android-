@@ -68,6 +68,57 @@ public class UserController  {
         return users;
     }
 
+    public User parseUser (JSONObject jsonObject)
+    {
+        try {
+
+            int id = jsonObject.getInt("id");
+            String nickname = jsonObject.getString("nickname");
+            Set<User> proposal;
+            try {
+                JSONArray incomingInvites = jsonObject.getJSONArray("incomingInvites");
+                proposal = new HashSet<>();
+                for (int i = 0; i < incomingInvites.length(); i++) {
+                    proposal.add(new User(incomingInvites.getJSONObject(i).getInt("id"), incomingInvites.getJSONObject(i).getString("nickname")));
+                }
+            }
+            catch (JSONException e)
+            {
+                proposal = null;
+            }
+            Set<User> waiting;
+            try {
+                JSONArray outcomingInvites = jsonObject.getJSONArray("outcomingcomingInvites");
+                waiting = new HashSet<>();
+                for (int i = 0; i < outcomingInvites.length(); i++) {
+                    waiting.add(new User(outcomingInvites.getJSONObject(i).getInt("id"), outcomingInvites.getJSONObject(i).getString("nickname")));
+                }
+            }
+            catch (JSONException e)
+            {
+                waiting = null;
+            }
+            Set<User> friends;
+            try {
+                JSONArray friendsU = jsonObject.getJSONArray("friends");
+                friends = new HashSet<>();
+                for (int i = 0; i < friendsU.length(); i++) {
+                    friends.add(new User(friendsU.getJSONObject(i).getInt("id"), friendsU.getJSONObject(i).getString("nickname")));
+                }
+            }
+            catch (JSONException e)
+            {
+                friends = null;
+            }
+
+
+            return new User(id, nickname, friends, waiting, proposal);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public User getUserPage() {
         return userPage;
     }

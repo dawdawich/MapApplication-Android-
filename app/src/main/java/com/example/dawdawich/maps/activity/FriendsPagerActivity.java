@@ -28,13 +28,17 @@ import com.example.dawdawich.maps.ConnectionApi.Connection;
 import com.example.dawdawich.maps.R;
 import com.example.dawdawich.maps.app.UserController;
 import com.example.dawdawich.maps.data.User;
+import com.example.dawdawich.maps.fragments.FriendsConfirmProposalFragment;
+import com.example.dawdawich.maps.fragments.FriendsListFragment;
 import com.example.dawdawich.maps.fragments.FriendsSearchFragment;
+import com.example.dawdawich.maps.fragments.FriendsWaitingConfirmFragment;
 import com.example.dawdawich.maps.fragments.PagerAdapter;
 
 public class FriendsPagerActivity extends AppCompatActivity{
 
-    private User user;
+    static private User user;
     private ViewPager viewPager;
+    static private TabLayout tabLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,8 +47,7 @@ public class FriendsPagerActivity extends AppCompatActivity{
         setContentView(R.layout.friends_tabs_layout);
 
         user = UserController.getInstance(this).getUser();
-
-        TabLayout tabLayout = (TabLayout)findViewById(R.id.tab_layout);
+        tabLayout = (TabLayout)findViewById(R.id.tab_layout);
 
 
         tabLayout.addTab(tabLayout.newTab().setText("Friends (" + (user.getFriends() != null ? user.getFriends().size() : 0) + ")"));
@@ -89,27 +92,24 @@ public class FriendsPagerActivity extends AppCompatActivity{
         final EditText friendsEditText = (EditText) findViewById(R.id.search_friend_label);
 
 
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        search.setOnClickListener(v -> {
 
-                if (friendsLabel.isEnabled())
-                {
-                    friendsLabel.setEnabled(false);
-                    friendsLabel.setVisibility(View.INVISIBLE);
-                    friendsEditText.setEnabled(true);
-                    friendsEditText.setVisibility(View.VISIBLE);
-                    viewPager.setCurrentItem(3);
-                }
-                else
-                {
-                    friendsLabel.setEnabled(true);
-                    friendsLabel.setVisibility(View.VISIBLE);
-                    friendsEditText.setEnabled(false);
-                    friendsEditText.setVisibility(View.INVISIBLE);
-                }
-
+            if (friendsLabel.isEnabled())
+            {
+                friendsLabel.setEnabled(false);
+                friendsLabel.setVisibility(View.INVISIBLE);
+                friendsEditText.setEnabled(true);
+                friendsEditText.setVisibility(View.VISIBLE);
+                viewPager.setCurrentItem(3);
             }
+            else
+            {
+                friendsLabel.setEnabled(true);
+                friendsLabel.setVisibility(View.VISIBLE);
+                friendsEditText.setEnabled(false);
+                friendsEditText.setVisibility(View.INVISIBLE);
+            }
+
         });
 
         final Context cnt = this;
@@ -145,122 +145,21 @@ public class FriendsPagerActivity extends AppCompatActivity{
 
     }
 
-    /*@Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-
-        ViewGroup viewGroup = (ViewGroup)inflater.inflate(R.layout.friends_tabs_layout, container, false);
-
-        user = UserController.getInstance(getContext()).getUser();
-
-        return viewGroup;
+    protected void onResume() {
+        super.onResume();
+        tabLayout.getTabAt(0).setText("Friends (" + (user.getWaitingConfirmFriends() != null ? user.getFriends().size() : 0) + ")");
+        tabLayout.getTabAt(1).setText("Заявки (" + (user.getWaitingConfirmFriends() != null ? user.getProposalFriends().size() : 0) + ")");
+        tabLayout.getTabAt(2).setText("Отправленые (" + (user.getWaitingConfirmFriends() != null ? user.getWaitingConfirmFriends().size() : 0) + ")");
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-
-        TabLayout tabLayout = (TabLayout)getActivity().findViewById(R.id.tab_layout);
-
-
-        tabLayout.addTab(tabLayout.newTab().setText("Friends (" + (user.getFriends() != null ? user.getFriends().size() : 0) + ")"));
-        tabLayout.addTab(tabLayout.newTab().setText("Заявки (" + (user.getProposalFriends() != null ? user.getProposalFriends().size() : 0) + ")"));
-        tabLayout.addTab(tabLayout.newTab().setText("Отправленые (" + (user.getWaitingConfirmFriends() != null ? user.getWaitingConfirmFriends().size() : 0) + ")"));
-        tabLayout.addTab(tabLayout.newTab().setText("Поиск"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-
-        viewPager = (ViewPager)getActivity().findViewById(R.id.pager);
-        final PagerAdapter adapter = new PagerAdapter(getActivity().getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(adapter);
-
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-
-        super.onActivityCreated(savedInstanceState);
+    public static void updateFragments ()
+    {
+        tabLayout.getTabAt(0).setText("Friends (" + (user.getWaitingConfirmFriends() != null ? user.getFriends().size() : 0) + ")");
+        tabLayout.getTabAt(1).setText("Заявки (" + (user.getWaitingConfirmFriends() != null ? user.getProposalFriends().size() : 0) + ")");
+        tabLayout.getTabAt(2).setText("Отправленые (" + (user.getWaitingConfirmFriends() != null ? user.getWaitingConfirmFriends().size() : 0) + ")");
+        FriendsConfirmProposalFragment.changeList(user.getProposalFriends());
+        FriendsListFragment.changeList(user.getFriends());
+        FriendsWaitingConfirmFragment.changeList(user.getWaitingConfirmFriends());
     }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        ActionBar actionBar = ((AppCompatActivity)activity).getSupportActionBar();
-        actionBar.setCustomView(R.layout.custom_actionbar_friends);
-        actionBar.setDisplayShowCustomEnabled(true);
-
-
-
-        final ImageView search = (ImageView)getActivity().findViewById(R.id.search_friends_image);
-        final TextView friendsLabel = (TextView) getActivity().findViewById(R.id.friends_label);
-        final EditText friendsEditText = (EditText) getActivity().findViewById(R.id.search_friend_label);
-
-
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (friendsLabel.isEnabled())
-                {
-                    friendsLabel.setEnabled(false);
-                    friendsLabel.setVisibility(View.INVISIBLE);
-                    friendsEditText.setEnabled(true);
-                    friendsEditText.setVisibility(View.VISIBLE);
-                    viewPager.setCurrentItem(3);
-                }
-                else
-                {
-                    friendsLabel.setEnabled(true);
-                    friendsLabel.setVisibility(View.VISIBLE);
-                    friendsEditText.setEnabled(false);
-                    friendsEditText.setVisibility(View.INVISIBLE);
-                }
-
-            }
-        });
-
-        friendsEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (viewPager.getCurrentItem() != 3)
-                {
-                    viewPager.setCurrentItem(3);
-                }
-
-                if (s.toString().equals(""))
-                {
-                    FriendsSearchFragment.clearAdapter();
-                    return;
-                }
-
-                Connection.getInstance(getContext()).searchUsers(s.toString());
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-    }*/
 }

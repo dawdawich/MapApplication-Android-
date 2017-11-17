@@ -5,6 +5,7 @@ package com.example.dawdawich.maps.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -48,10 +49,6 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Intent i = new Intent(getApplicationContext(),
-                MapsActivity.class);
-        startActivity(i);
-
         inputEmail = (EditText) findViewById(R.id.email);
         inputPassword = (EditText) findViewById(R.id.password);
         btnLogin = (Button) findViewById(R.id.btnLogin);
@@ -64,49 +61,43 @@ public class LoginActivity extends Activity {
         // SQLite database handler
         db = new SQLiteHandler(getApplicationContext());
 
-//  TODO      String nickname = db.getUserDetails().get("nickname");
+        String nickname = getSharedPreferences("user_data", MODE_PRIVATE).getString("nickname", "");
 
         // Session manager
         session = new SessionManager(getApplicationContext());
 
+        //TODO make auto login
         // Check if user is already logged in or not
-//        if (session.isLoggedIn() && nickname != null && nickname.equals("")) {
-//            // User is already logged in. Take him to main activity
-//            Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }
+        /*if (session.isLoggedIn() && nickname != null && nickname.equals("")) {
+            // User is already logged in. Take him to main activity
+            Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+            startActivity(intent);
+            finish();
+        }*/
 
         // Login button Click Event
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        btnLogin.setOnClickListener(view -> {
+            String email = inputEmail.getText().toString().trim();
+            String password = inputPassword.getText().toString().trim();
 
-            public void onClick(View view) {
-                String email = inputEmail.getText().toString().trim();
-                String password = inputPassword.getText().toString().trim();
-
-                // Check for empty data in the form
-                if (!email.isEmpty() && !password.isEmpty()) {
-                    // login user
-                    checkLogin(email, password);
-                } else {
-                    // Prompt user to enter credentials
-                    Toast.makeText(getApplicationContext(),
-                            "Please enter the credentials!", Toast.LENGTH_LONG)
-                            .show();
-                }
+            // Check for empty data in the form
+            if (!email.isEmpty() && !password.isEmpty()) {
+                // login user
+                checkLogin(email, password);
+            } else {
+                // Prompt user to enter credentials
+                Toast.makeText(getApplicationContext(),
+                        "Please enter the credentials!", Toast.LENGTH_LONG)
+                        .show();
             }
-
         });
 
         // Link to Register Screen
-        btnLinkToRegister.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(),
-                        RegisterActivity.class);
-                startActivity(i);
-                finish();
-            }
+        btnLinkToRegister.setOnClickListener(view -> {
+            Intent i = new Intent(getApplicationContext(),
+                    RegisterActivity.class);
+            startActivity(i);
+            finish();
         });
 
     }
@@ -131,42 +122,44 @@ public class LoginActivity extends Activity {
         }
 
         JsonObjectRequest strReq = new JsonObjectRequest(Method.POST,
-                AppConfig.URL_LOGIN, params, new Response.Listener<JSONObject>() {
+                AppConfig.URL_LOGIN, params, response -> {
+                    Log.d(TAG, "Login Response: " + response.toString());
+                    hideDialog();
 
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d(TAG, "Login Response: " + response.toString());
-                hideDialog();
+                    try {
+                        boolean error = response.getBoolean("error");
 
-                try {
-                    boolean error = response.getBoolean("error");
+                        // Check for error node in json
+                        if (!error) {
+                            // user successfully logged in
+                            // Create login session
+                            JSONObject user = response.getJSONObject("user");
+                            //session.setLogin(true);
 
-                    // Check for error node in json
-                    if (!error) {
-                        // user successfully logged in
-                        // Create login session
-                        session.setLogin(true);
+                            SharedPreferences preferences = getSharedPreferences("user_data", MODE_PRIVATE);
+                            preferences.edit().putInt("id", user.getInt("id"));
+                            preferences.edit().putString("nickname", user.getString("nickname"));
+                            preferences.edit().putString("email", user.getString("email"));
+                            preferences.edit().commit();
 
-
-                        // Launch main activity
-                        Intent intent = new Intent(LoginActivity.this,
-                                MapsActivity.class);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        // Error in login. Get the error message
-                        String errorMsg = response.getString("error_msg");
-                        Toast.makeText(getApplicationContext(),
-                                errorMsg, Toast.LENGTH_LONG).show();
+                            // Launch main activity
+                            Intent intent = new Intent(LoginActivity.this,
+                                    MapsActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            // Error in login. Get the error message
+                            String errorMsg = response.getString("error_msg");
+                            Toast.makeText(getApplicationContext(),
+                                    errorMsg, Toast.LENGTH_LONG).show();
+                        }
+                    } catch (JSONException e) {
+                        // JSON error
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     }
-                } catch (JSONException e) {
-                    // JSON error
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                }
 
-            }
-        }, new Response.ErrorListener() {
+                }, new Response.ErrorListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
