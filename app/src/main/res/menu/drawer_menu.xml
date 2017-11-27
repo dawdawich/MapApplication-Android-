@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/friend" android:title="Friends" android:icon="@drawable/account_multiple"/>
-    <item android:id="@+id/settings" android:title="Settings"/>
+    <group android:id="@+id/main_block" android:checkableBehavior="single">
+        <item
+            android:id="@+id/friend"
+            android:icon="@drawable/account_multiple"
+            android:title="Friends"
+            android:checkable="false"/>
+        <item
+            android:id="@+id/settings"
+            android:title="Settings"
+            android:checkable="false"/>
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/logout"
+            android:icon="@drawable/ic_power_settings_new_black_24dp"
+            android:title="Logout"
+            android:checkable="false"/>
+    </group>
 </menu>

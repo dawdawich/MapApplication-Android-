@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.dawdawich.maps">
+    package="com.example.dawdawich.locator">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -19,7 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".app.AppController">
+        android:name="com.example.dawdawich.locator.app.AppController">
 
 
         <meta-data
@@ -27,26 +27,26 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".activity.MapsActivity"
+            android:name="com.example.dawdawich.locator.activity.MapsActivity"
             android:label="@string/title_activity_maps"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize">
         </activity>
 
         <activity
-            android:name=".activity.FriendsPagerActivity"
+            android:name="com.example.dawdawich.locator.activity.FriendsPagerActivity"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize">
         </activity>
 
         <activity
-            android:name=".activity.UserPageActivity"
+            android:name="com.example.dawdawich.locator.activity.UserPageActivity"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize">
         </activity>
 
         <activity
-            android:name=".activity.LoginActivity"
+            android:name="com.example.dawdawich.locator.activity.LoginActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustPan" >
@@ -57,7 +57,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.RegisterActivity"
+            android:name="com.example.dawdawich.locator.activity.RegisterActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustPan" />
