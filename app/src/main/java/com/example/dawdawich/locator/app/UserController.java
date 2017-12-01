@@ -17,16 +17,13 @@ import java.util.Set;
 public class UserController   {
 
     private static UserController instance;
-    private SQLiteHandler db;
     private User user;
     private User userPage;
 
 
     private UserController() {
-        db = new SQLiteHandler(AppController.getInstance());
         Map<String, ?> user_data = AppController.getInstance().getSharedPreferences("user_data", Context.MODE_PRIVATE).getAll();
         user = new User((Integer) user_data.get("id"), (String) user_data.get("nickname"));
-        user.setFriends(db.getFriends());
     }
 
     public synchronized static UserController getInstance()

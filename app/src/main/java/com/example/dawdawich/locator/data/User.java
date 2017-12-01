@@ -2,12 +2,20 @@ package com.example.dawdawich.locator.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 
 import com.example.dawdawich.locator.app.AppController;
+import com.example.dawdawich.locator.helper.ImageHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,6 +32,7 @@ public class User {
     private Set<User> friends;
     private Set<User> waitingConfirmFriends;
     private Set<User> proposalFriends;
+    private Bitmap avatar;
 
 
     public User(int id, String nickname, double latitude, double longitude, String last_update) {
@@ -49,8 +58,25 @@ public class User {
         this.nickname = nickname;
 
         SharedPreferences prefs = AppController.getInstance().getSharedPreferences("user_data", Context.MODE_PRIVATE);
-        latitude = prefs.getFloat("user_latitude", 0);
-        longitude = prefs.getFloat("user_longitude", 0);
+        if (id == prefs.getInt("id", 0)) {
+            latitude = prefs.getFloat("user_latitude", 0);
+            longitude = prefs.getFloat("user_longitude", 0);
+            String path = prefs.getString("avatar_path", "");
+            if (!path.equals("") && avatar == null) {
+                File file = new File(AppController.getInstance().getFilesDir(), path);
+                try {
+                    BufferedInputStream br = new BufferedInputStream (new FileInputStream(file));
+                    long size = file.length();
+                    byte[] buffer = new byte[(int) size];
+                    br.read(buffer, 0, buffer.length);
+                    br.close();
+                    avatar = ImageHelper.getImage(buffer);
+                }
+                catch (IOException e) {
+                    //You'll need to add proper error handling here
+                }
+            }
+        }
 
         friends = new HashSet<>();
         waitingConfirmFriends = new HashSet<>();
@@ -63,6 +89,27 @@ public class User {
         this.friends = friends;
         this.waitingConfirmFriends = waitingConfirmFriends;
         this.proposalFriends = proposalFriends;
+
+        SharedPreferences prefs = AppController.getInstance().getSharedPreferences("user_data", Context.MODE_PRIVATE);
+        if (id == prefs.getInt("id", 0)) {
+            latitude = prefs.getFloat("user_latitude", 0);
+            longitude = prefs.getFloat("user_longitude", 0);
+            String path = prefs.getString("avatar_path", "");
+            if (!path.equals("") && avatar == null) {
+                File file = new File(AppController.getInstance().getFilesDir(), path);
+                try {
+                    BufferedInputStream br = new BufferedInputStream (new FileInputStream(file));
+                    long size = file.length();
+                    byte[] buffer = new byte[(int) size];
+                    br.read(buffer, 0, buffer.length);
+                    br.close();
+                    avatar = ImageHelper.getImage(buffer);
+                }
+                catch (IOException e) {
+                    //You'll need to add proper error handling here
+                }
+            }
+        }
 
     }
 
@@ -143,5 +190,13 @@ public class User {
     @Override
     public boolean equals(Object obj) {
         return obj instanceof User && ((User) obj).getNickname().equals(nickname);
+    }
+
+    public Bitmap getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Bitmap avatar) {
+        this.avatar = avatar;
     }
 }

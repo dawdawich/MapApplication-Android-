@@ -4,6 +4,7 @@ package com.example.dawdawich.locator.app;
 import android.app.Application;
 import android.content.Context;
 
+import com.example.dawdawich.locator.helper.SQLiteHandler;
 import com.example.dawdawich.locator.helper.SessionManager;
 import com.example.dawdawich.locator.interfaces.UpdateUser;
 
@@ -12,6 +13,7 @@ public class AppController extends Application {
     private static AppController mInstance;
     private UpdateUser update;
     private SessionManager session;
+    private SQLiteHandler db;
 
     private Context mContext;
 
@@ -21,6 +23,8 @@ public class AppController extends Application {
         mInstance = this;
         mContext = getApplicationContext();
         session = new SessionManager(this);
+        db = new SQLiteHandler(AppController.getInstance());
+
     }
 
     public static synchronized AppController getInstance() {
@@ -45,5 +49,9 @@ public class AppController extends Application {
 
     public void setSession(SessionManager session) {
         this.session = session;
+    }
+
+    public SQLiteHandler getDb() {
+        return db;
     }
 }

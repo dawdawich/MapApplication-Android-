@@ -105,6 +105,8 @@ public class UserPositionController {
                             {
                                 u.setLatitude(user.getDouble("latitude"));
                                 u.setLongitude(user.getDouble("longitude"));
+                                AppController.getInstance().getDb().updateFriendPosition(u.getId(),
+                                        u.getLatitude(), u.getLongitude());
                                 break;
                             }
                         }

@@ -15,7 +15,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dawdawich.locator.ConnectionApi.UserInfoController;
@@ -48,6 +52,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int REQUEST_PERMISSION_SETTING = 101;
     private boolean sentToSettings = false;
     private SharedPreferences permissionStatus;
+    private DrawerLayout mDrawerLayout;
+    private NavigationView navigationView;
+
+
 
     private HashMap<Integer, Marker> markers;
 
@@ -65,12 +73,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         permissionStatus = getSharedPreferences("permissionStatus", MODE_PRIVATE);
 
-        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.maps_drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.maps_drawer_layout);
         ActionBarDrawerToggle mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.maps_navigation_view);
+        navigationView = (NavigationView) findViewById(R.id.maps_navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        ((TextView)navigationView.getHeaderView(0).findViewById(R.id.user_nickname)).setText(nickname);
 
 
         iconGenerator = new IconGenerator(this);
@@ -87,6 +97,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onResume() {
         super.onResume();
         UserInfoController.getThisInfo(getSharedPreferences("user_data", MODE_PRIVATE).getInt("id", 0));
+        if (UserController.getInstance().getUser().getAvatar() != null)
+            ((ImageView)navigationView.getHeaderView(0).findViewById(R.id.user_avatar)).
+                    setImageBitmap(UserController.getInstance().getUser().getAvatar());
     }
 
     private void proceedAfterPermission() {
@@ -265,4 +278,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+    public void openMenu(View view) {
+
+        mDrawerLayout.openDrawer(Gravity.LEFT);
+
+    }
+
+    public void startUserPage(View view) {
+        UserController.getInstance().setUserPage(null);
+        startActivity(new Intent(this, UserPageActivity.class));
+    }
 }

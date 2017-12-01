@@ -30,6 +30,12 @@ public class AppConfig {
     public static String URL_CONFIRMINVITE = "http://91.241.176.8:8080/confirm_invitation";
     //public static String URL_CONFIRMINVITE = "http://192.168.1.252:8080/confirm_invitation";
 
-    public static String URL_ISUPDATE = "http://91.241.176.8:8080/is_update";
+    public static String URL_ISUPDATE = "http://91.241.176.8:8080/is_user_update";
+
+    public static String URL_SENDAVATAR = "http://91.241.176.8:8080/send_avatar";
+
+    public static String URL_GETAVATAR = "http://91.241.176.8:8080/get_avatar";
+
+    public static String URL_ISSAMEAVATAR = "http://91.241.176.8:8080/is_same_avatar";
 
 }
